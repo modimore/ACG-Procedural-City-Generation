@@ -1,3 +1,11 @@
+#include <cassert>
+#include <vector>
+#include "argparser.h"
+#include "boundingbox.h"
+#include "vbo_structs.h"
+
+static int next_block_id = 1;
+
 class Grid;
 class Block;
 class Lot;
@@ -5,17 +13,16 @@ class Building;
 
 class Lot { 
 private:
+  Block* block;
   int x_index;
   int y_index;
   Building* here;
-  Block* block;
 public:
   // constructor
   Lot(Block* b, int x, int y) 
   : block(b), x_index(x), y_index(y), here(NULL) {};
   
   // accessors
-  int getBlockID() const { return block_id; }
   int getX() const { return x_index; }
   int getY() const { return y_index; }
   Building* getBuilding() const { return here; }
@@ -25,7 +32,6 @@ public:
 
 class Block {
 private:
-  static int next_block_id = 1;
   int block_id;
   int width;
   int length;
@@ -34,14 +40,42 @@ private:
 public:
   Block(int w, int l)
   : width(w), length(l) { block_id = next_block_id++; }
+  int getBlockID() const { return block_id; }
 };
 
 class Grid {
 private:
-  int width;
-  int length;
+  ArgParser* args;
+  int width = 1;
+  int length = 1;
+  BoundingBox bbox;
   std::vector<Block*> blocks;
+  
+  std::vector<VBOPosNormalColor> grid_tri_verts;
+  std::vector<VBOIndexedTri> grid_tri_indices;
+  std::vector<VBOPosNormalColor> grid_edge_verts;
+  std::vector<VBOIndexedTri> grid_edge_indices;
+  
+  GLuint grid_tri_verts_VBO;
+  GLuint grid_tri_indices_VBO;
+  GLuint grid_edge_verts_VBO;
+  GLuint grid_edge_indices_VBO;
 public:
-  Grid(int w, int l)
-  : width(w), length(l) { }
-}
+  // grid setup functions
+  Grid(ArgParser* _args);
+  void Load();
+  void Setup();
+  
+  // what?
+  BoundingBox getBoundingBox() const { return bbox; }
+  
+  // Rendering Functions
+  void initializeVBOs();
+  void setupVBOs();
+  void drawVBOs();
+  void cleanupVBOs();
+  
+  void setupGrid();
+  void drawGrid();
+  
+};
