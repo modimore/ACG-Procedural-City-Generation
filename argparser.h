@@ -50,9 +50,12 @@ public:
     DefaultValues();
 
     for (int i = 1; i < argc; i++) {
-      if (argv[i] == std::string("-input")) {
+      if (argv[i] == std::string("-grid")) {
         i++; assert (i < argc); 
         separatePathAndFile(argv[i],path,grid_file);
+      } else if (argv[i] == std::string("-bldg") || argv[i] == std::string("-building") ) {
+		i++; assert (i<argc);
+		bldg_file = std::string(argv[i]);
       } else if (argv[i] == std::string("-size")) {
         i++; assert (i < argc); 
 	    width = height = atoi(argv[i]);
@@ -70,6 +73,10 @@ public:
     width = 500;
     height = 500;
     
+    path = "../ACG-Procedural-City-Generation";
+    grid_file = "simple_grid.txt";
+    bldg_file = "box.obj";
+    
     bounding_box = false;
     // uncomment for deterministic randomness
     // mtrand = MTRand(37);
@@ -82,6 +89,7 @@ public:
   // all public! (no accessors)
 
   std::string grid_file;
+  std::string bldg_file;
   std::string path;
   int width;
   int height;

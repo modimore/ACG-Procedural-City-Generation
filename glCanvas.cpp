@@ -106,8 +106,12 @@ void GLCanvas::initialize(ArgParser *_args) {
   // ===========================
   // initial placement of camera 
   // look at an object scaled & positioned to just fit in the box (-1,-1,-1)->(1,1,1)
-  glm::vec3 camera_position = glm::vec3(1,3,8);
-  glm::vec3 point_of_interest = glm::vec3(0,0,0);
+  glm::vec3 min, max;
+  grid->getBoundingBox().Get(min,max);
+  glm::vec3 camera_position = max + float(2.0)*glm::vec3(1.0,1.0,1.0);
+  glm::vec3 point_of_interest = float(0.5) * (min + max);
+  //glm::vec3 camera_position = glm::vec3(1,3,8);
+  //glm::vec3 point_of_interest = glm::vec3(0,0,0);
   glm::vec3 up = glm::vec3(0,1,0);
   float angle = 20.0;
   camera = new PerspectiveCamera(camera_position, point_of_interest, up, angle);
@@ -121,8 +125,6 @@ void GLCanvas::Load(){
   delete grid;
   grid = new Grid(args);
 }
-
-//void GLCanvas::animate(){ }
 
 void GLCanvas::initializeVBOs(){
   HandleGLError("enter initilizeVBOs()");
@@ -139,12 +141,13 @@ void GLCanvas::initializeVBOs(){
 
 
   grid->initializeVBOs();
+  if ( args->bounding_box ) bbox.initializeVBOs();
   HandleGLError("leaving initilizeVBOs()");
 }
 
 void GLCanvas::setupVBOs(){
   bbox.Set(grid->getBoundingBox());
-  bbox.setupVBOs();
+  if ( args->bounding_box ) bbox.setupVBOs();
   grid->setupVBOs();
   HandleGLError("leaving setupVBOs()");
 }
@@ -153,13 +156,13 @@ void GLCanvas::drawVBOs(const glm::mat4 &ProjectionMatrix,const glm::mat4 &ViewM
 
   HandleGLError("enter GlCanvas::drawVBOs()");
 
-
   // prepare data to send to the shaders
   glm::mat4 MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
 
   HandleGLError("mid1 GlCanvas::drawVBOs()");
 
-  glm::vec3 lightPos = glm::vec3(4,4,4);
+  //glm::vec3 lightPos = glm::vec3(4,4,4);
+  glm::vec3 lightPos = bbox.getMax() + glm::vec3(1.0,1.0,1.0);
   glUniform3f(GLCanvas::LightID, lightPos.x, lightPos.y, lightPos.z);
   HandleGLError("mid1 GlCanvas::drawVBOs()");
   glUniformMatrix4fv(GLCanvas::MatrixID, 1, GL_FALSE, &MVP[0][0]);
@@ -168,26 +171,18 @@ void GLCanvas::drawVBOs(const glm::mat4 &ProjectionMatrix,const glm::mat4 &ViewM
   HandleGLError("mid3 GlCanvas::drawVBOs()");
   glUniformMatrix4fv(GLCanvas::ViewMatrixID, 1, GL_FALSE, &ViewMatrix[0][0]);
   HandleGLError("mid4 GlCanvas::drawVBOs()");
-  //glUniform1i(GLCanvas::wireframeID, args->wireframe);
-
-  HandleGLError("mid5 GlCanvas::drawVBOs()");
   glUniform1i(GLCanvas::colormodeID, 1);
 
-  HandleGLError("mid6 GlCanvas::drawVBOs()");
+  HandleGLError("mid5 GlCanvas::drawVBOs()");
   if (args->bounding_box) {
     bbox.drawVBOs();
   }
-  HandleGLError("mid7 GlCanvas::drawVBOs()");
-
-
-  glUniform1i(GLCanvas::colormodeID, 0);
-  HandleGLError("mid8 GlCanvas::drawVBOs()");
-
   grid->drawVBOs();
   HandleGLError("leaving GlCanvas::drawVBOs()");
 }
 
 void GLCanvas::cleanupVBOs(){
+  if ( args->bounding_box ) bbox.cleanupVBOs();
   grid->cleanupVBOs();
 }
 
