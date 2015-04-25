@@ -26,3 +26,44 @@ Building::Building( ArgParser* args ) {
 	}
   }
 }
+
+//make randomized size changes to building
+void Building::sizeShuffle(){
+	//uhh these values are pretty arbitrary, maybe scale with grid size?
+	float v1 = rand() % 256;
+	float v2 = rand() % 256;
+
+	//stretch along x and/or z axis
+	for(int i = 0; i < verts.size(); ++i){
+		verts[i] *= glm::vec3(v1/100, 1,v2/100);
+		bbox.Extend(verts[i]);
+	}
+	
+}
+//make randomized color changes to building
+void Building::colorShuffle(){
+	float c1 = (rand()%256)/(float)256;
+	float c2 = (rand()%256)/(float)256;
+	float c3 = (rand()%256)/(float)256;
+	float c4 = (rand()%256)/(float)256;
+
+	color = glm::vec4(c1,c2,c3,c4);
+}
+/*
+ * 
+(3D)
+ALGORITHM:
+For finding all acceptable states of 3D vertext which lies at intersection of 3 planes with normals N = {n1, n2, n3}
+Vertex states defined as assignments to the vertex's six adjacent edges
+1. find a point p on each face, edge, vertex of input whose faces are parallel to N
+2. for all points p:
+	for all directions d:
+		Determine geometry at p + (epsilon)d
+		if p + (epsilon)d is...
+		...on a face, determine its normal direction
+		...on an edge, determine normal directions of its two faces and if angle between them is reflex
+		...in the interior or exterior
+*
+*/
+
+

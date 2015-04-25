@@ -143,7 +143,10 @@ void Grid::setupBuildings() {
 void Grid::setupBuilding(int index, int i, int k) {
   
   Building bldg = bldgs[index];
-  
+  bldg.colorShuffle();
+  bldg.sizeShuffle();
+  bldg.rotationShuffle();
+ 
   for ( unsigned int j = 0; j < bldg.faces.size(); j++ ) {
 	glm::vec3 f = bldg.faces[j];
 	glm::vec3 normal = ComputeNormal(bldg.verts[(int)f.x-1],bldg.verts[(int)f.y-1],bldg.verts[(int)f.z-1]);
