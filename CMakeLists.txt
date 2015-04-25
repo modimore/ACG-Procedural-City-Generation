@@ -1,7 +1,7 @@
 cmake_minimum_required (VERSION 2.8)
 project (final)
 
-set(my_executable simulation)
+set(my_executable makecity)
 
 # toggle for building a 32 bit version (for Dr. Memory)
 set(BUILD_32 "")

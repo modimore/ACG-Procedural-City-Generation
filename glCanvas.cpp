@@ -93,8 +93,8 @@ void GLCanvas::initialize(ArgParser *_args) {
   glfwSetMouseButtonCallback(GLCanvas::window,GLCanvas::mousebuttonCB);
   glfwSetKeyCallback(GLCanvas::window,GLCanvas::keyboardCB);
 
-  programID = LoadShaders( args->path+"/simulation.vertexshader",
-                           args->path+"/simulation.fragmentshader" );
+  programID = LoadShaders( args->path+"/makecity.vertexshader",
+                           args->path+"/makecity.fragmentshader" );
 
   // Load grid and building models
   Load();
@@ -108,10 +108,10 @@ void GLCanvas::initialize(ArgParser *_args) {
   // look at an object scaled & positioned to just fit in the box (-1,-1,-1)->(1,1,1)
   glm::vec3 min, max;
   grid->getBoundingBox().Get(min,max);
-  glm::vec3 camera_position = max + float(2.0)*glm::vec3(1.0,1.0,1.0);
-  glm::vec3 point_of_interest = float(0.5) * (min + max);
-  //glm::vec3 camera_position = glm::vec3(1,3,8);
-  //glm::vec3 point_of_interest = glm::vec3(0,0,0);
+  //glm::vec3 camera_position = max + float(2.0)*glm::vec3(1.0,1.0,1.0);
+  //glm::vec3 point_of_interest = float(0.5) * (min + max);
+  glm::vec3 camera_position = glm::vec3(1,3,8);
+  glm::vec3 point_of_interest = glm::vec3(0,0,0);
   glm::vec3 up = glm::vec3(0,1,0);
   float angle = 20.0;
   camera = new PerspectiveCamera(camera_position, point_of_interest, up, angle);
@@ -146,6 +146,7 @@ void GLCanvas::initializeVBOs(){
 }
 
 void GLCanvas::setupVBOs(){
+  grid->fillDriver();
   bbox.Set(grid->getBoundingBox());
   if ( args->bounding_box ) bbox.setupVBOs();
   grid->setupVBOs();
@@ -161,8 +162,8 @@ void GLCanvas::drawVBOs(const glm::mat4 &ProjectionMatrix,const glm::mat4 &ViewM
 
   HandleGLError("mid1 GlCanvas::drawVBOs()");
 
-  //glm::vec3 lightPos = glm::vec3(4,4,4);
-  glm::vec3 lightPos = bbox.getMax() + glm::vec3(1.0,1.0,1.0);
+  glm::vec3 lightPos = glm::vec3(4,4,4);
+  //glm::vec3 lightPos = bbox.getMax();// + glm::vec3(1.0,1.0,1.0);
   glUniform3f(GLCanvas::LightID, lightPos.x, lightPos.y, lightPos.z);
   HandleGLError("mid1 GlCanvas::drawVBOs()");
   glUniformMatrix4fv(GLCanvas::MatrixID, 1, GL_FALSE, &MVP[0][0]);
