@@ -84,7 +84,7 @@ void Grid::fill(int bldg_index, int i, int k, int* r_val) {
   if ( i == width || k == length ) return;
   if ( getLotStatus(i,k) != L_EMPTY ) {
 	std::cout << "Lot status at (" << i << "," << k << ") is " << getLotStatus(i,k) << std::endl;
-  } 
+  }
   else {
 	setupBuilding(bldg_index,i,k);
 	setLotStatus(i,k,L_FULL);
@@ -104,24 +104,42 @@ void Grid::fillDriver() {
   }
   
   int num_placed = 0;
-  int k = 0, i = 0, bldg_index = 0;
-  int delta = 1;
   
-  while ( k < length ) {
-	if ( getLotStatus(i,k) == L_EMPTY ) {
-	  setupBuilding(bldg_index,i,k);
-	  setLotStatus(i,k,L_FULL);
-	  lots[map2Dto1D(i,k)].setBuilding(&bldgs[bldg_index]);
-	  //std::cout << getLotColor(i,k).x << getLotColor(i,k).y << getLotColor(i,k).z << std::endl;
-	  //setLotColor(i,k,glm::vec4(0.5,0.5,0.5,1.0)+glm::vec4(float(0.5*delta),-float(0.5*delta),0.0,0.0));
-	  //std::cout << getLotColor(i,k).x << getLotColor(i,k).y << getLotColor(i,k).z << std::endl;
-	  num_placed++;
-    } else {
-	  std::cout << "Lot status at (" << i << "," << k << ") is " << getLotStatus(i,k) << std::endl;
-	}
-	if ( i + delta >= width || i + delta < 0 ) {
-	  delta = -delta; k++;
-	} else { i += delta; }
+  for ( unsigned int bldg_index = 0; bldg_index < bldgs.size(); bldg_index++ ) {
+    
+    Building bldg = bldgs[bldg_index];
+	int k = 0, i = 0;
+	int delta = 1;
+	
+    while ( k < length ) {
+	  if ( getLotStatus(i,k) == L_EMPTY ) {
+		bool place_building = true;
+	    for ( int i_ = 0; i_ < bldg.getWidth(); i_++ ) {
+		  for ( int k_ = 0; k_< bldg.getLength(); k_++ ) {
+		    if ( (bldg.checkFootprint(i_,k_)) &&
+			     (getLotStatus(i+i_,k+k_) != L_EMPTY ) ) {
+			  place_building = false;
+			  break;
+		    }
+		  }
+	    }
+	    if ( place_building ) {
+	      setupBuilding(bldg_index,i,k);
+	      for ( int i_ = 0; i_ < bldg.getWidth(); i_++ ) {
+		    for ( int k_ = 0; k_< bldg.getLength(); k_++ ) {
+		      if ( bldg.checkFootprint(i_,k_) )
+		        setLotStatus(i+i_,k+k_,L_FULL);
+		    }
+		  }
+		  lots[map2Dto1D(i,k)].setBuilding(&bldgs[bldg_index]);
+		  num_placed++;
+		}
+      }
+	  if ( i + delta >= width || i + delta < 0 ) {
+	    delta = -delta; k++;
+	  } else { i += delta; }
+    }
+    
   }
   
   std::cout << num_placed << " buildings created" << std::endl;

@@ -5,6 +5,7 @@
 #include "argparser.h"
 #include "glCanvas.h"
 
+// mark cells in the footprint which the given edge (line) lies in
 void BoundingGrid::mark(const Edge& e) {
   for ( int i = min_x; i < max_x; i++ ) {
 	if ( ((e.start.x > i+1) && (e.end.x > i+1)) || ((e.start.x < i) && (e.end.x < i)) ) continue;
@@ -15,39 +16,46 @@ void BoundingGrid::mark(const Edge& e) {
   }
 }
 
+// print out the grid and object footprint
 void BoundingGrid::print() {
   for ( int i = 0; i < (max_x - min_x); i++ ) {
 	for ( int k = 0; k < (max_z - min_z); k++ ) {
-	  std::cout << footprint[map2Dto1D(i,k)] << " ";
+	  std::cout << ((footprint[map2Dto1D(i,k)]) ? "X":"O") << " ";
 	}
 	std::cout << std::endl;
   }
 }
 
+// load a building from a restricted .obj-style formatted file
 Building::Building( ArgParser* args ) {
 	
+  // filepath as specified in arg parser
   std::ifstream istr(std::string(args->path+'/'+args->bldg_file));
+  // temporary variables used to read from file
   std::string token;
   float x,y,z;
   int a,b,c;
   
+  // default colour
   color = glm::vec4(0.6,0.2,0.8,0.2);
   
-  //std::cout << args->bldg_file << std::endl;
-  //std::cout << args->path << std::endl;
-  
+  // read in all the lines in the file
   while (istr >> token) {
+	// if a vertex is being specified
+	// add it to the list of vertices
+	// and extend or create the bounding grid if necessary
 	if ( token == "v" ) {
 	  istr >> x >> y >> z;
 	  verts.push_back(glm::vec3(x,y,z));
 	  if ( verts.size() == 1 ) {
-		bbox = BoundingBox(verts[0]);
 		bgrid = BoundingGrid(verts[0]);
 	  }	else { 
 		bgrid.extend(glm::vec3(x,y,z));
-	    bbox.Extend(glm::vec3(x,y,z));
 	  }
 	}
+	// if a face is being specified
+	// add it to the list of faces
+	// and also add all of its edges to the building
 	else if ( token == "f" ) {
 	  istr >> a >> b >> c;
 	  faces.push_back(glm::vec3(a,b,c));
@@ -57,8 +65,12 @@ Building::Building( ArgParser* args ) {
 	}
   }
   
-  bgrid.resizeFootprint();
+  // set building width and height
+  width = (int)bgrid.getDiff().x;
+  length = (int)bgrid.getDiff().z;
   
+  // generate the footprint of the building
+  bgrid.resizeFootprint();
   for ( unsigned int i = 0; i < edges.size(); i++ ) {
 	bgrid.mark(edges[i]);
   }
@@ -76,7 +88,8 @@ void Building::sizeShuffle(){
 	//stretch along x and/or z axis
 	for(unsigned int i = 0; i < verts.size(); ++i){
 		verts[i] *= glm::vec3(v1/100, 1,v2/100);
-		bbox.Extend(verts[i]);
+		//bbox.Extend(verts[i]);
+		bgrid.extend(verts[i]);
 	}
 	
 }
