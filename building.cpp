@@ -5,6 +5,25 @@
 #include "argparser.h"
 #include "glCanvas.h"
 
+void BoundingGrid::mark(const Edge& e) {
+  for ( int i = min_x; i < max_x; i++ ) {
+	if ( ((e.start.x > i+1) && (e.end.x > i+1)) || ((e.start.x < i) && (e.end.x < i)) ) continue;
+	for ( int k = min_z; k < max_z; k++ ) {
+	  if ( ((e.start.z > k+1) && (e.end.z > k+1)) || ((e.start.z < k) && (e.end.z < k)) ) continue;
+	  footprint[map2Dto1D(i,k)] = true;
+	}
+  }
+}
+
+void BoundingGrid::print() {
+  for ( int i = 0; i < (max_x - min_x); i++ ) {
+	for ( int k = 0; k < (max_z - min_z); k++ ) {
+	  std::cout << footprint[map2Dto1D(i,k)] << " ";
+	}
+	std::cout << std::endl;
+  }
+}
+
 Building::Building( ArgParser* args ) {
 	
   std::ifstream istr(std::string(args->path+'/'+args->bldg_file));
@@ -14,17 +33,38 @@ Building::Building( ArgParser* args ) {
   
   color = glm::vec4(0.6,0.2,0.8,0.2);
   
+  //std::cout << args->bldg_file << std::endl;
+  //std::cout << args->path << std::endl;
+  
   while (istr >> token) {
 	if ( token == "v" ) {
 	  istr >> x >> y >> z;
 	  verts.push_back(glm::vec3(x,y,z));
-	  bbox.Extend(glm::vec3(x,y,z));
+	  if ( verts.size() == 1 ) {
+		bbox = BoundingBox(verts[0]);
+		bgrid = BoundingGrid(verts[0]);
+	  }	else { 
+		bgrid.extend(glm::vec3(x,y,z));
+	    bbox.Extend(glm::vec3(x,y,z));
+	  }
 	}
 	else if ( token == "f" ) {
 	  istr >> a >> b >> c;
 	  faces.push_back(glm::vec3(a,b,c));
+	  edges.push_back( Edge(verts[a],verts[b]) );
+	  edges.push_back( Edge(verts[b],verts[c]) );
+	  edges.push_back( Edge(verts[c],verts[a]) );
 	}
   }
+  
+  bgrid.resizeFootprint();
+  
+  for ( unsigned int i = 0; i < edges.size(); i++ ) {
+	bgrid.mark(edges[i]);
+  }
+  
+  bgrid.print();
+  
 }
 
 //make randomized size changes to building
@@ -34,7 +74,7 @@ void Building::sizeShuffle(){
 	float v2 = rand() % 256;
 
 	//stretch along x and/or z axis
-	for(int i = 0; i < verts.size(); ++i){
+	for(unsigned int i = 0; i < verts.size(); ++i){
 		verts[i] *= glm::vec3(v1/100, 1,v2/100);
 		bbox.Extend(verts[i]);
 	}

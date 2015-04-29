@@ -1,2 +1,2 @@
 width 3 length 3
-block 0 0 
+water 1 0 3 3 

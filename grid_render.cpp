@@ -145,8 +145,7 @@ void Grid::setupBuilding(int index, int i, int k) {
   
   Building bldg = bldgs[index];
   bldg.colorShuffle();
-  bldg.sizeShuffle();
-  bldg.rotationShuffle();
+  //bldg.sizeShuffle();
  
   for ( unsigned int j = 0; j < bldg.faces.size(); j++ ) {
 	glm::vec3 f = bldg.faces[j];

@@ -73,6 +73,8 @@ private:
   ArgParser* args;
   int width = 1;
   int length = 1;
+  int max_bldg_width = 1;
+  int max_bldg_length = 1;
   BoundingBox bbox;
   std::vector<bool> lotStatus;
   //std::vector<Block*> blocks;
