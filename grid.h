@@ -1,72 +1,28 @@
+#ifndef _GRID_H_
+#define _GRID_H_
+
 #include <cassert>
 #include <vector>
+#include <queue>
 
 #include "argparser.h"
 #include "boundingbox.h"
 #include "vbo_structs.h"
 #include "building.h"
+#include "lot.h"
 
-enum LOT_STATUS { L_EMPTY, L_FULL, L_ROAD, L_WATER, L_PARK, L_BLOCKED };
 
-class Lot { 
-private:
-  int x_index;
-  int z_index;
-  int status;
-  glm::vec4 color;
-  Building* here;
-public:
-  // constructor
-  Lot(int x, int z) 
-  : x_index(x), z_index(z), here(NULL) { status = 0; setColor(); }
-  
-  // accessors & modifiers
-  int get_x() const { return x_index; }
-  int get_z() const { return z_index; }
-  glm::vec4 getColor() const { return color; }
-  void setColor();
-  void setColor( const glm::vec4 & _color ) { color = _color; }
-  Building* getBuilding() const { return here; }
-  void setBuilding( Building* bldg ) { here = bldg; } 
-  
-  int getStatus() const { return status; }
-  void setStatus( int s ) { status = s; setColor(); }
-  bool isEmpty() const { return (here==NULL); }
+//comparison class for sorting PQ
+class bldgCompare{
+	public:
+	bool operator() (Building left , Building right) const
+	  {
+		if (left.getSize() < right.getSize()){ return true;}
+		else return false;
+	  }
 };
 
-/*
-class Lot { 
-private:
-  Block* block;
-  int x_index;
-  int y_index;
-  Building* here;
-public:
-  // constructor
-  Lot(Block* b, int x, int y) 
-  : block(b), x_index(x), y_index(y), here(NULL) {};
-  
-  // accessors
-  int getX() const { return x_index; }
-  int getY() const { return y_index; }
-  Building* getBuilding() const { return here; }
-  
-  bool isEmpty() { return (here==NULL); }
-};
-
-class Block {
-private:
-  int block_id;
-  int width;
-  int length;
-  std::vector<Lot*> lots;
-  Grid* grid;
-public:
-  Block(int w, int l)
-  : width(w), length(l) { block_id = next_block_id++; }
-  int getBlockID() const { return block_id; }
-};
-*/
+typedef  std::priority_queue<Building,std::vector<Building>,bldgCompare> bldg_PQ;
 
 class Grid {
 private:
@@ -76,6 +32,7 @@ private:
   BoundingBox bbox;
   std::vector<bool> lotStatus;
   //std::vector<Block*> blocks;
+  bldg_PQ bldgsPQ;
   std::vector<Building> bldgs;
   std::vector<Lot> lots;
   
@@ -132,3 +89,5 @@ public:
   void drawBuildings();
   
 };
+
+#endif

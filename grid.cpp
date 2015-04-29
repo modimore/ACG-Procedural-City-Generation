@@ -84,11 +84,11 @@ void Grid::fill(int bldg_index, int i, int k, int* r_val) {
   if ( i == width || k == length ) return;
   if ( getLotStatus(i,k) != L_EMPTY ) {
 	std::cout << "Lot status at (" << i << "," << k << ") is " << getLotStatus(i,k) << std::endl;
-  } 
+  }
   else {
 	setupBuilding(bldg_index,i,k);
 	setLotStatus(i,k,L_FULL);
-	lots[map2Dto1D(i,k)].setBuilding(&bldgs[bldg_index]);
+	//lots[map2Dto1D(i,k)].setBuilding(&bldgs[bldg_index]);
 	*r_val += 1;
   }
   fill(bldg_index,i+1,k,r_val);
@@ -111,7 +111,7 @@ void Grid::fillDriver() {
 	if ( getLotStatus(i,k) == L_EMPTY ) {
 	  setupBuilding(bldg_index,i,k);
 	  setLotStatus(i,k,L_FULL);
-	  lots[map2Dto1D(i,k)].setBuilding(&bldgs[bldg_index]);
+	  //lots[map2Dto1D(i,k)].setBuilding(&bldgs[bldg_index]);
 	  //std::cout << getLotColor(i,k).x << getLotColor(i,k).y << getLotColor(i,k).z << std::endl;
 	  //setLotColor(i,k,glm::vec4(0.5,0.5,0.5,1.0)+glm::vec4(float(0.5*delta),-float(0.5*delta),0.0,0.0));
 	  //std::cout << getLotColor(i,k).x << getLotColor(i,k).y << getLotColor(i,k).z << std::endl;
