@@ -59,7 +59,13 @@ public:
       } else if (argv[i] == std::string("-size")) {
         i++; assert (i < argc); 
 	    width = height = atoi(argv[i]);
-      } else {
+      } else if ( argv[i] == std::string("-bldg_max") ) {
+		i++; assert(i<argc);
+		bldg_max = atoi(argv[i]);
+      } else if ( argv[i] == std::string("-bldg_min") ) {
+		i++; assert(i<argc);
+		bldg_min = atoi(argv[i]);
+	  } else {
 	    printf ("whoops error with command line argument %d: '%s'\n",i,argv[i]);
 	    assert(0);
       }
@@ -72,6 +78,9 @@ public:
   void DefaultValues() {
     width = 500;
     height = 500;
+    
+    bldg_max = 1;
+    bldg_min = 0;
     
     path = "../ACG-Procedural-City-Generation";
     grid_file = "simple_grid.txt";
@@ -93,6 +102,9 @@ public:
   std::string path;
   int width;
   int height;
+  
+  int bldg_min;
+  int bldg_max;
 
   bool bounding_box;
 
