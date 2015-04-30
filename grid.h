@@ -19,11 +19,11 @@ private:
   int status;
   glm::vec4 color;
   // pointer to occupying building, if any
-  Building* here;
+  //Building* here;
 public:
   // constructor
   Lot(int x, int z) 
-  : x_index(x), z_index(z), here(NULL) { status = 0; setColor(); }
+  : x_index(x), z_index(z) { status = 0; setColor(); }
   
   // accessors & modifiers
   // -- location
@@ -34,12 +34,12 @@ public:
   void setColor();
   void setColor( const glm::vec4 & _color ) { color = _color; }
   // -- building
-  Building* getBuilding() const { return here; }
-  void setBuilding( Building* bldg ) { here = bldg; } 
+  //Building* getBuilding() const { return here; }
+  //void setBuilding( Building* bldg ) { here = bldg; } 
   // -- status
   int getStatus() const { return status; }
   void setStatus( int s ) { status = s; setColor(); }
-  bool isEmpty() const { return (here==NULL); }
+  //bool isEmpty() const { return (here==NULL); }
 };
 
 /*
