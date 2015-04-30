@@ -75,21 +75,24 @@ Building::Building( ArgParser* args ) {
 	bgrid.mark(edges[i]);
   }
   
+  std::cout << getSize() << std::endl;
   bgrid.print();
   
 }
 
+
 //make randomized size changes to building
-void Building::sizeShuffle(){
-	//uhh these values are pretty arbitrary, maybe scale with grid size?
-	float v1 = rand() % 256;
-	float v2 = rand() % 256;
+void Building::sizeShuffle(unsigned int max, unsigned int min){
+
+	//generate random coordinate value from given min/max building sizes
+	int diff = max-min;
+	float v1 = (rand()%diff) + min;
+	float v2 = (rand()%diff) + min;
 
 	//stretch along x and/or z axis
 	for(unsigned int i = 0; i < verts.size(); ++i){
-		verts[i] *= glm::vec3(v1/100, 1,v2/100);
-		//bbox.Extend(verts[i]);
-		bgrid.extend(verts[i]);
+		verts[i] *= glm::vec3(v1, 1, v2);
+		bbox.Extend(verts[i]);
 	}
 	
 }
@@ -102,6 +105,7 @@ void Building::colorShuffle(){
 
 	color = glm::vec4(c1,c2,c3,c4);
 }
+
 /*
  * 
 (3D)

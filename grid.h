@@ -1,61 +1,27 @@
+#ifndef _GRID_H_
+#define _GRID_H_
+
 #include <cassert>
 #include <vector>
+#include <queue>
 
 #include "argparser.h"
 #include "boundingbox.h"
 #include "vbo_structs.h"
 #include "building.h"
+#include "lot.h"
 
-enum LOT_STATUS { L_EMPTY, L_FULL, L_ROAD, L_WATER, L_PARK, L_BLOCKED };
-
-// represents a 1x1 square on the grid plane
-class Lot { 
-private:
-  // x and z location of the lot's llc on the grid
-  int x_index;
-  int z_index;
-  // status variable used to determine colour
-  // and whether buildings can be placed here
-  int status;
-  glm::vec4 color;
-  // pointer to occupying building, if any
-  //Building* here;
-public:
-  // constructor
-  Lot(int x, int z) 
-  : x_index(x), z_index(z) { status = 0; setColor(); }
-  
-  // accessors & modifiers
-  // -- location
-  int get_x() const { return x_index; }
-  int get_z() const { return z_index; }
-  // -- colour
-  glm::vec4 getColor() const { return color; }
-  void setColor();
-  void setColor( const glm::vec4 & _color ) { color = _color; }
-  // -- building
-  //Building* getBuilding() const { return here; }
-  //void setBuilding( Building* bldg ) { here = bldg; } 
-  // -- status
-  int getStatus() const { return status; }
-  void setStatus( int s ) { status = s; setColor(); }
-  //bool isEmpty() const { return (here==NULL); }
+//comparison class for sorting PQ
+class bldgCompare{
+	public:
+	bool operator() (Building left , Building right) const
+	  {
+		if (left.getSize() < right.getSize()){ return true;}
+		else return false;
+	  }
 };
 
-/*
-class Block {
-private:
-  int block_id;
-  int width;
-  int length;
-  std::vector<Lot*> lots;
-  Grid* grid;
-public:
-  Block(int w, int l)
-  : width(w), length(l) { block_id = next_block_id++; }
-  int getBlockID() const { return block_id; }
-};
-*/
+typedef  std::priority_queue<Building,std::vector<Building>,bldgCompare> bldg_PQ;
 
 class Grid {
 private:
@@ -66,6 +32,7 @@ private:
   //int max_bldg_length = 1;
   BoundingBox bbox;
   //std::vector<Block*> blocks;
+  bldg_PQ bldgsPQ;
   std::vector<Building> bldgs;
   std::vector<Lot> lots;
   
@@ -125,3 +92,5 @@ public:
   void drawBuildings();
   
 };
+
+#endif

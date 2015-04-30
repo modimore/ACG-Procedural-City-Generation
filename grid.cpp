@@ -88,7 +88,7 @@ void Grid::fill(int bldg_index, int i, int k, int* r_val) {
   else {
 	setupBuilding(bldg_index,i,k);
 	setLotStatus(i,k,L_FULL);
-	lots[map2Dto1D(i,k)].setBuilding(&bldgs[bldg_index]);
+	//lots[map2Dto1D(i,k)].setBuilding(&bldgs[bldg_index]);
 	*r_val += 1;
   }
   fill(bldg_index,i+1,k,r_val);
@@ -104,6 +104,25 @@ void Grid::fillDriver() {
   }
   
   int num_placed = 0;
+  //int k = 0, i = 0, bldg_index = 0;
+ // int delta = 1;
+  
+ /* while ( k < length ) {
+	if ( getLotStatus(i,k) == L_EMPTY ) {
+	  setupBuilding(bldg_index,i,k);
+	  setLotStatus(i,k,L_FULL);
+	  //lots[map2Dto1D(i,k)].setBuilding(&bldgs[bldg_index]);
+	  //std::cout << getLotColor(i,k).x << getLotColor(i,k).y << getLotColor(i,k).z << std::endl;
+	  //setLotColor(i,k,glm::vec4(0.5,0.5,0.5,1.0)+glm::vec4(float(0.5*delta),-float(0.5*delta),0.0,0.0));
+	  //std::cout << getLotColor(i,k).x << getLotColor(i,k).y << getLotColor(i,k).z << std::endl;
+	  num_placed++;
+    } else {
+	  std::cout << "Lot status at (" << i << "," << k << ") is " << getLotStatus(i,k) << std::endl;
+	}
+	if ( i + delta >= width || i + delta < 0 ) {
+	  delta = -delta; k++;
+	} else { i += delta; }*/
+
   
   for ( unsigned int bldg_index = 0; bldg_index < bldgs.size(); bldg_index++ ) {
     
@@ -131,7 +150,7 @@ void Grid::fillDriver() {
 		        setLotStatus(i+i_,k+k_,L_FULL);
 		    }
 		  }
-		  lots[map2Dto1D(i,k)].setBuilding(&bldgs[bldg_index]);
+		  //lots[map2Dto1D(i,k)].setBuilding(&bldgs[bldg_index]);
 		  num_placed++;
 		}
       }
@@ -145,6 +164,9 @@ void Grid::fillDriver() {
   std::cout << num_placed << " buildings created" << std::endl;
   
 }
+
+
+
 /*
 void Grid::fillDriver() {
   int* r_val = new int(0);

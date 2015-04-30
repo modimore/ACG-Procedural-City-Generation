@@ -1,7 +1,7 @@
 cmake_minimum_required (VERSION 2.8)
 project (final)
 
-set(my_executable citygen)
+set(my_executable makecity)
 
 # toggle for building a 32 bit version (for Dr. Memory)
 set(BUILD_32 "")
@@ -25,6 +25,8 @@ add_executable(${my_executable}
   grid.h
   grid.cpp
   grid_render.cpp
+  building.h
+  building.cpp
 )
 
 # http://glm.g-truc.net/0.9.5/updates.html

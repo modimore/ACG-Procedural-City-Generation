@@ -27,6 +27,7 @@ add_executable(${my_executable}
   grid_render.cpp
   building.h
   building.cpp
+  lot.h
 )
 
 # http://glm.g-truc.net/0.9.5/updates.html

@@ -1,6 +1,10 @@
+#ifndef _BUILDING_H_
+#define _BUILDING_H_
+
 #include <cmath>
 #include <vector>
 #include "boundingbox.h"
+#include "lot.h"
 
 class ArgParser;
 
@@ -68,23 +72,36 @@ private:
   std::vector<glm::vec3> faces;
   std::vector<Edge> edges;
   glm::vec4 color;
+  //bounding box - based on actual coordinate space
+  BoundingBox bbox;
   //BoundingBox bbox;
   BoundingGrid bgrid;
   // size parameters
   int width;
   int height;
   int length;
+  int size;
   
 public:
   Building(ArgParser* args);
-  // visual shuffling functions
-  void sizeShuffle();
+  
+  //int getSize() const {return size;}
+  //building attribute shuffling functions
+  void sizeShuffle(unsigned int max, unsigned int min);
   void colorShuffle();
-  void rotationShuffle();
   
   // size accessors
   int getWidth() { return width; }
   int getLength() { return length; }
+  int getSize() { 
+	int size = 0;
+	for ( int i = 0; i < width; i++ ) {
+	  for ( int k = 0; k < length; k++ ) {
+		if ( checkFootprint(i,k) ) size += 1;
+	  }
+	}
+	return size;
+  }
   
   // check specific slot of the building footprint
   bool checkFootprint(int i, int k) const {
@@ -92,4 +109,5 @@ public:
   }
 };
 
+#endif
 
