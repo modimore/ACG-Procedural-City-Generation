@@ -79,8 +79,8 @@ public:
     width = 500;
     height = 500;
     
-    bldg_max = 1;
-    bldg_min = 0;
+    bldg_max = 3;
+    bldg_min = 1;
     
     path = "../ACG-Procedural-City-Generation";
     grid_file = "simple_grid.txt";

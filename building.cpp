@@ -5,6 +5,7 @@
 #include "argparser.h"
 #include "glCanvas.h"
 
+//-----------------------------------------------------------------
 // mark cells in the footprint which the given edge (line) lies in
 void BoundingGrid::mark(const Edge& e) {
   for ( int i = min_x; i < max_x; i++ ) {
@@ -25,6 +26,7 @@ void BoundingGrid::print() {
 	std::cout << std::endl;
   }
 }
+//------------------------------------------------------------------
 
 // load a building from a restricted .obj-style formatted file
 Building::Building( ArgParser* args ) {
@@ -36,10 +38,11 @@ Building::Building( ArgParser* args ) {
   float x,y,z;
   int a,b,c;
   
-  // default colour
-  color = glm::vec4(0.6,0.2,0.8,0.2);
+  //random default colour
+  colorShuffle();
   
   // read in all the lines in the file
+  //(load in initial verts)
   while (istr >> token) {
 	// if a vertex is being specified
 	// add it to the list of vertices
@@ -47,22 +50,34 @@ Building::Building( ArgParser* args ) {
 	if ( token == "v" ) {
 	  istr >> x >> y >> z;
 	  verts.push_back(glm::vec3(x,y,z));
-	  if ( verts.size() == 1 ) {
+	  /*if ( verts.size() == 1 ) {
 		bgrid = BoundingGrid(verts[0]);
 	  }	else { 
-		bgrid.extend(glm::vec3(x,y,z));
-	  }
+		//bgrid.extend(glm::vec3(x,y,z));
+	  }*/
 	}
+	
 	// if a face is being specified
 	// add it to the list of faces
 	// and also add all of its edges to the building
-	else if ( token == "f" ) {
+	if ( token == "f" ) {
 	  istr >> a >> b >> c;
 	  faces.push_back(glm::vec3(a,b,c));
+	}
+  }
+  
+  //shuffle building dimensions for variety
+  sizeShuffle(args->bldg_max, args->bldg_min);
+  
+  for ( unsigned int i = 0; i < faces.size(); i++ ) {
+	  
+	  a = (int)faces[i].x;
+	  b = (int)faces[i].y;
+	  c = (int)faces[i].z;
 	  edges.push_back( Edge(verts[a],verts[b]) );
 	  edges.push_back( Edge(verts[b],verts[c]) );
 	  edges.push_back( Edge(verts[c],verts[a]) );
-	}
+	  
   }
   
   // set building width and height
@@ -75,26 +90,31 @@ Building::Building( ArgParser* args ) {
 	bgrid.mark(edges[i]);
   }
   
-  std::cout << getSize() << std::endl;
-  bgrid.print();
+  //std::cout << getSize() << std::endl;
+  //bgrid.print();
   
 }
-
 
 //make randomized size changes to building
 void Building::sizeShuffle(unsigned int max, unsigned int min){
 
 	//generate random coordinate value from given min/max building sizes
 	int diff = max-min;
+	//if(diff == 0)	diff = 1;
 	float v1 = (rand()%diff) + min;
 	float v2 = (rand()%diff) + min;
 
 	//stretch along x and/or z axis
 	for(unsigned int i = 0; i < verts.size(); ++i){
 		verts[i] *= glm::vec3(v1, 1, v2);
-		bbox.Extend(verts[i]);
+		//extend bounding grid to altered size
+		if(i == 0){
+			bgrid = BoundingGrid(verts[0]);
+		}
+		else{
+			bgrid.extend(verts[i]);
+		}
 	}
-	
 }
 //make randomized color changes to building
 void Building::colorShuffle(){

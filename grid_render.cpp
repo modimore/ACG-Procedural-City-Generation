@@ -141,6 +141,8 @@ void Grid::setupBuildings() {
   
 }
 
+
+//generatebuildings will feed into this function
 void Grid::setupBuilding(int index, int i, int k) {
   
   Building bldg = bldgs[index];

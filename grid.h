@@ -53,9 +53,11 @@ private:
   GLuint grid_edge_indices_VBO;
   GLuint bldg_tri_verts_VBO;
   GLuint bldg_tri_indices_VBO;
+  
 private:
   int map2Dto1D( int i, int k ) const { return k*width + i; }
   void map1Dto2D( int c, int& i, int& k ) const {i = c%width; k = c/width;}
+
 public:
   // grid setup functions
   Grid(ArgParser* _args);
@@ -71,10 +73,13 @@ public:
   void setLotStatus(int i,int k,const int& val) { lots[map2Dto1D(i,k)].setStatus(val); }
   glm::vec4 getLotColor(int i,int k) const { return lots[map2Dto1D(i,k)].getColor(); }
   void setLotColor(int i,int k,const glm::vec4& c) { lots[map2Dto1D(i,k)].setColor(c); }
-  
+   //void generateBuildings(Building b, int max, int min); //WHAT?
+   
   // Grid-filling Functions
   void fill(int i, int k, int bldg_index, int* r_val);
   void fillDriver();
+  
+  //
   
   // Rendering Functions
   void initializeVBOs();

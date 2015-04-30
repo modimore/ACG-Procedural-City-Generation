@@ -3,6 +3,8 @@
 #include <iostream>
 #include <fstream>
 
+
+
 void Lot::setColor() {
   if ( status == L_EMPTY || status == L_FULL ) 
     color = glm::vec4(0.5,0.2,0.1,1.0);
@@ -16,13 +18,17 @@ void Lot::setColor() {
     color = glm::vec4(0.8,0.1,0.1,1.0);
 }
 
+
+
 Grid::Grid( ArgParser* _args ) {
   
   args = _args;
   Load();
   bbox.Extend(glm::vec3(width,1,length));
   
-  bldgs.push_back(Building(args));
+  for(int i = 0; i < 100; ++i){
+	bldgs.push_back(Building(args));
+  }
   
 }
 
@@ -79,23 +85,6 @@ void Grid::Load() {
   }
 }
 
-void Grid::fill(int bldg_index, int i, int k, int* r_val) {
-  
-  if ( i == width || k == length ) return;
-  if ( getLotStatus(i,k) != L_EMPTY ) {
-	std::cout << "Lot status at (" << i << "," << k << ") is " << getLotStatus(i,k) << std::endl;
-  }
-  else {
-	setupBuilding(bldg_index,i,k);
-	setLotStatus(i,k,L_FULL);
-	//lots[map2Dto1D(i,k)].setBuilding(&bldgs[bldg_index]);
-	*r_val += 1;
-  }
-  fill(bldg_index,i+1,k,r_val);
-  if (i==0)fill(bldg_index,i,k+1,r_val);
-  
-}
-
 void Grid::fillDriver() {
   
   if ( length == 0 || width == 0 ) {
@@ -104,27 +93,73 @@ void Grid::fillDriver() {
   }
   
   int num_placed = 0;
-  //int k = 0, i = 0, bldg_index = 0;
- // int delta = 1;
   
- /* while ( k < length ) {
-	if ( getLotStatus(i,k) == L_EMPTY ) {
-	  setupBuilding(bldg_index,i,k);
-	  setLotStatus(i,k,L_FULL);
-	  //lots[map2Dto1D(i,k)].setBuilding(&bldgs[bldg_index]);
-	  //std::cout << getLotColor(i,k).x << getLotColor(i,k).y << getLotColor(i,k).z << std::endl;
-	  //setLotColor(i,k,glm::vec4(0.5,0.5,0.5,1.0)+glm::vec4(float(0.5*delta),-float(0.5*delta),0.0,0.0));
-	  //std::cout << getLotColor(i,k).x << getLotColor(i,k).y << getLotColor(i,k).z << std::endl;
-	  num_placed++;
-    } else {
-	  std::cout << "Lot status at (" << i << "," << k << ") is " << getLotStatus(i,k) << std::endl;
-	}
-	if ( i + delta >= width || i + delta < 0 ) {
-	  delta = -delta; k++;
-	} else { i += delta; }*/
+  //placeholder for searching through the building list
+  unsigned int bldg_index = 0;
+  //variables for traversing grid (XZ plane)
+  int z = 0; int x = 0;
+  //step distance in the x direction
+  int delta = 1;
+  
+  //try to place building in grid
+  //if it can be placed, increment and continue
+  //if we search through the full grid and cannot fit the building, try the next building
+  //end when we have iterated through the whole building list	
+  while ( (z < length) && (bldg_index < bldgs.size()) ) {
+	
+	Building bldg = bldgs[bldg_index];
+	bldg.print();
+	std::cout << bldg_index << "  ----------" << std::endl;
 
+	//CHECK FOR PLACEMENT
+	//if lot is empty - preliminary elimination (check corner slot)
+	if ( getLotStatus(x,z) == L_EMPTY ) {
+			
+		//consider placing building
+		bool place_building = true;
+		
+		//loop through building footprint (check neighborhood)
+		for ( int i = 0; i < bldg.getWidth(); i++ ) {
+		  for ( int k = 0; k< bldg.getLength(); k++ ) {
+			//check for grid collisions - break out of loop if you cannot place it
+			if ( (bldg.checkFootprint(i,k)) && (getLotStatus(x+i,z+k) != L_EMPTY ) ) {
+			  place_building = false;
+			  break;
+			}
+		  }
+		}
+
+		//PLACE BUILDING
+		if ( place_building ) {
+		  setupBuilding(bldg_index,x,z);
+		  for ( int i = 0; i < bldg.getWidth(); i++ ) {
+			for ( int k = 0; k< bldg.getLength(); k++ ) {
+			  if ( bldg.checkFootprint(i,k) ) {
+				setLotStatus(x+i,z+k,L_FULL);
+			  }
+			}
+		  }
+		  num_placed++;
+		  bldg_index++;
+		}
+		 
+	}
+	
+	//move to next valid slot in the grid
+	if ( x + delta >= width || x + delta < 0 ) {
+		delta = -delta; z++;
+	} else { 
+		x += delta; 
+	}
+
+	if ( z > length ) {
+		bldg_index++;
+		z = 0; x = 0; delta = 1;
+	}
+	
+  }
   
-  for ( unsigned int bldg_index = 0; bldg_index < bldgs.size(); bldg_index++ ) {
+  /*for ( unsigned int bldg_index = 0; bldg_index < bldgs.size(); bldg_index++ ) {
     
     Building bldg = bldgs[bldg_index];
 	int k = 0, i = 0;
@@ -159,19 +194,9 @@ void Grid::fillDriver() {
 	  } else { i += delta; }
     }
     
-  }
+  }*/
   
   std::cout << num_placed << " buildings created" << std::endl;
   
 }
 
-
-
-/*
-void Grid::fillDriver() {
-  int* r_val = new int(0);
-  fill(0,0,0,r_val);
-  std::cout << *r_val << " buildings created" << std::endl;
-  delete r_val;
-}
-*/

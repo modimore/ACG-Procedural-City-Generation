@@ -17,6 +17,7 @@ public:
   Edge(const glm::vec3& a, const glm::vec3& b) { start = a; end = b; }
 };
 
+//------------------------------------------------------------------
 // discretised grid that represents the bounds of a building
 // and also contains its footprint
 class BoundingGrid {
@@ -61,6 +62,8 @@ public:
   
   void print();
 };
+//----------------------------------------------------------------------
+
 
 // data structure that represents a building object
 class Building {
@@ -107,7 +110,13 @@ public:
   bool checkFootprint(int i, int k) const {
 	return bgrid.checkFootprint(i,k);
   }
+  
+  void print(){
+	  bgrid.print();
+  }
 };
+
+
 
 #endif
 

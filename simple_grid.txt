@@ -1,1 +1,1 @@
-width 3 length 3
+width 6 length 6
