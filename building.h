@@ -86,7 +86,7 @@ private:
   int size;
   
 public:
-  Building(ArgParser* args);
+  Building(ArgParser* args, unsigned int index);
   
   //int getSize() const {return size;}
   //building attribute shuffling functions

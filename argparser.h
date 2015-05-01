@@ -3,8 +3,11 @@
 
 #include <cassert>
 #include <string>
+#include <vector>
 #include <glm/glm.hpp>
 #include "mtrand.h"
+
+#include <iostream>
 
 // ================================================================================
 // ================================================================================
@@ -30,7 +33,7 @@ inline void separatePathAndFile(const std::string &input, std::string &path, std
   if (last == std::string::npos) {
     // if there is no directory in the filename
     file = input;
-    path = ".";
+    path = "."; //path = "../ACG-Procedural-City-Generation";
   } else {
     // separate filename & path
     file = input.substr(last+1,input.size()-last-1);
@@ -48,14 +51,23 @@ public:
 
   ArgParser(int argc, char *argv[]) {
     DefaultValues();
-
+    
     for (int i = 1; i < argc; i++) {
       if (argv[i] == std::string("-grid")) {
         i++; assert (i < argc); 
         separatePathAndFile(argv[i],path,grid_file);
       } else if (argv[i] == std::string("-bldg") || argv[i] == std::string("-building") ) {
 		i++; assert (i<argc);
-		bldg_file = std::string(argv[i]);
+		bldg_files.clear();
+		bldg_files.push_back(std::string(argv[i]));
+      } else if (argv[i] == std::string("-bldgs") || argv[i] == std::string("-buildings") ) {
+		i++; assert (i<argc);
+		int j_max = atoi(argv[i]); 
+		assert(i+j_max<argc);
+		bldg_files.clear();
+		for ( int j = 0; j < j_max; j++ ) {
+		  i++; bldg_files.push_back(std::string(argv[i]));
+		}
       } else if (argv[i] == std::string("-size")) {
         i++; assert (i < argc); 
 	    width = height = atoi(argv[i]);
@@ -65,6 +77,9 @@ public:
       } else if ( argv[i] == std::string("-bldg_min") ) {
 		i++; assert(i<argc);
 		bldg_min = atoi(argv[i]);
+	  } else if ( argv[i] == std::string("-bldg_alters") || argv[i] == std::string("-bc") ) {
+		i++; assert(i<argc);
+		num_bldg_alters = atoi(argv[i]);
 	  } else {
 	    printf ("whoops error with command line argument %d: '%s'\n",i,argv[i]);
 	    assert(0);
@@ -81,10 +96,11 @@ public:
     
     bldg_max = 3;
     bldg_min = 1;
+    num_bldg_alters = 5;
     
     path = "../ACG-Procedural-City-Generation";
     grid_file = "simple_grid.txt";
-    bldg_file = "box.obj";
+    bldg_files.push_back("box.obj");
     
     bounding_box = false;
     // uncomment for deterministic randomness
@@ -97,14 +113,15 @@ public:
   // REPRESENTATION
   // all public! (no accessors)
 
-  std::string grid_file;
-  std::string bldg_file;
   std::string path;
+  std::string grid_file;
+  std::vector< std::string > bldg_files;
   int width;
   int height;
   
   int bldg_min;
   int bldg_max;
+  int num_bldg_alters;
 
   bool bounding_box;
 

@@ -29,10 +29,11 @@ void BoundingGrid::print() {
 //------------------------------------------------------------------
 
 // load a building from a restricted .obj-style formatted file
-Building::Building( ArgParser* args ) {
-	
+Building::Building( ArgParser* args, unsigned int index ) {
+  
+  assert(index < args->bldg_files.size());
   // filepath as specified in arg parser
-  std::ifstream istr(std::string(args->path+'/'+args->bldg_file));
+  std::ifstream istr(std::string(args->path+'/'+args->bldg_files[index]));
   // temporary variables used to read from file
   std::string token;
   float x,y,z;
@@ -50,11 +51,6 @@ Building::Building( ArgParser* args ) {
 	if ( token == "v" ) {
 	  istr >> x >> y >> z;
 	  verts.push_back(glm::vec3(x,y,z));
-	  /*if ( verts.size() == 1 ) {
-		bgrid = BoundingGrid(verts[0]);
-	  }	else { 
-		//bgrid.extend(glm::vec3(x,y,z));
-	  }*/
 	}
 	
 	// if a face is being specified

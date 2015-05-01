@@ -26,8 +26,11 @@ Grid::Grid( ArgParser* _args ) {
   Load();
   bbox.Extend(glm::vec3(width,1,length));
   
-  for(int i = 0; i < 100; ++i){
-	bldgs.push_back(Building(args));
+  for (unsigned int ind = 0; ind < args->bldg_files.size(); ind++) {
+	std::cout << args->bldg_files[ind] << std::endl;
+	for(int i = 0; i < args->num_bldg_alters; ++i){
+	  bldgs.push_back(Building(args,ind));
+	}
   }
   
 }
