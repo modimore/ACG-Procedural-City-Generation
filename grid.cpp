@@ -4,6 +4,7 @@
 #include <fstream>
 
 
+//------------------------------------------------------------------
 
 void Lot::setColor() {
   if ( status == L_EMPTY || status == L_FULL ) 
@@ -18,7 +19,7 @@ void Lot::setColor() {
     color = glm::vec4(0.8,0.1,0.1,1.0);
 }
 
-
+//------------------------------------------------------------------
 
 Grid::Grid( ArgParser* _args ) {
   
@@ -27,7 +28,6 @@ Grid::Grid( ArgParser* _args ) {
   bbox.Extend(glm::vec3(width,1,length));
   
   for (unsigned int ind = 0; ind < args->bldg_files.size(); ind++) {
-	std::cout << args->bldg_files[ind] << std::endl;
 	for(int i = 0; i < args->num_bldg_alters; ++i){
 	  bldgs.push_back(Building(args,ind));
 	}
@@ -111,8 +111,8 @@ void Grid::fillDriver() {
   while ( (z < length) && (bldg_index < bldgs.size()) ) {
 	
 	Building bldg = bldgs[bldg_index];
-	bldg.print();
-	std::cout << bldg_index << "  ----------" << std::endl;
+	//std::cout << bldg_index << "  ----------" << std::endl;
+	//bldg.print();
 
 	//CHECK FOR PLACEMENT
 	//if lot is empty - preliminary elimination (check corner slot)
@@ -155,7 +155,7 @@ void Grid::fillDriver() {
 		x += delta; 
 	}
 
-	if ( z > length ) {
+	if ( z >= length ) {
 		bldg_index++;
 		z = 0; x = 0; delta = 1;
 	}
@@ -203,3 +203,4 @@ void Grid::fillDriver() {
   
 }
 
+//------------------------------------------------------------------

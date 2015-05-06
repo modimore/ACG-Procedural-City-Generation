@@ -280,7 +280,11 @@ void GLCanvas::keyboardCB(GLFWwindow* window, int key, int scancode, int action,
     switch (key) {
     case 'b':  case 'B':
       args->bounding_box = !args->bounding_box;
-      break; 
+      break;
+    case ' ':
+      std::cout << "adding add'l buildings" << std::endl;
+      setupVBOs();
+      break;
     case 'r':  case 'R': 
       // reset system
       cleanupVBOs();
@@ -294,7 +298,7 @@ void GLCanvas::keyboardCB(GLFWwindow* window, int key, int scancode, int action,
     default:
       std::cout << "UNKNOWN KEYBOARD INPUT  '" << (char)key << "'" << std::endl;
     }
-    setupVBOs();
+    //setupVBOs();
   }
 }
 

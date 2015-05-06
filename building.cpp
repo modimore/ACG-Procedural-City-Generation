@@ -1,17 +1,20 @@
 #include <iostream>
 #include <fstream>
+#include <cmath>
 
 #include "building.h"
 #include "argparser.h"
 #include "glCanvas.h"
 
-//-----------------------------------------------------------------
+//------------------------------------------------------------------
 // mark cells in the footprint which the given edge (line) lies in
 void BoundingGrid::mark(const Edge& e) {
   for ( int i = min_x; i < max_x; i++ ) {
-	if ( ((e.start.x > i+1) && (e.end.x > i+1)) || ((e.start.x < i) && (e.end.x < i)) ) continue;
+	if ( ((e.start.x >= i+1) && (e.end.x >= i+1))
+	    || ((e.start.x <= i) && (e.end.x <= i)) ) continue;
 	for ( int k = min_z; k < max_z; k++ ) {
-	  if ( ((e.start.z > k+1) && (e.end.z > k+1)) || ((e.start.z < k) && (e.end.z < k)) ) continue;
+	  if ( ((e.start.z >= k+1) && (e.end.z >= k+1)) 
+		  || ((e.start.z <= k) && (e.end.z <= k)) ) continue;
 	  footprint[map2Dto1D(i,k)] = true;
 	}
   }
@@ -70,9 +73,9 @@ Building::Building( ArgParser* args, unsigned int index ) {
 	  a = (int)faces[i].x;
 	  b = (int)faces[i].y;
 	  c = (int)faces[i].z;
-	  edges.push_back( Edge(verts[a],verts[b]) );
-	  edges.push_back( Edge(verts[b],verts[c]) );
-	  edges.push_back( Edge(verts[c],verts[a]) );
+	  edges.push_back( Edge(verts[a-1],verts[b-1]) );
+	  edges.push_back( Edge(verts[b-1],verts[c-1]) );
+	  edges.push_back( Edge(verts[c-1],verts[a-1]) );
 	  
   }
   
@@ -85,9 +88,6 @@ Building::Building( ArgParser* args, unsigned int index ) {
   for ( unsigned int i = 0; i < edges.size(); i++ ) {
 	bgrid.mark(edges[i]);
   }
-  
-  //std::cout << getSize() << std::endl;
-  //bgrid.print();
   
 }
 
@@ -122,6 +122,8 @@ void Building::colorShuffle(){
 	color = glm::vec4(c1,c2,c3,c4);
 }
 
+//------------------------------------------------------------------
+
 /*
  * 
 (3D)
@@ -138,5 +140,3 @@ Vertex states defined as assignments to the vertex's six adjacent edges
 		...in the interior or exterior
 *
 */
-
-

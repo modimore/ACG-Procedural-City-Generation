@@ -96,7 +96,7 @@ public:
     
     bldg_max = 3;
     bldg_min = 1;
-    num_bldg_alters = 5;
+    num_bldg_alters = 7;
     
     path = "../ACG-Procedural-City-Generation";
     grid_file = "simple_grid.txt";
