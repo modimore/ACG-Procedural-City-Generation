@@ -1,2 +1,0 @@
-width 3 length 3
-block 0 0 
