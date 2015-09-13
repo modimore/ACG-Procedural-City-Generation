@@ -1,0 +1,9 @@
+width 20 length 20
+
+water 0 1 4 20
+water 4 3 16 6
+water 16 1 20 20
+water 0 12 20 20
+water 4 3 9 20
+water 12 3 20 20 
+
